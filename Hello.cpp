@@ -58,11 +58,7 @@ namespace {
 
       Constant * c = M.getOrInsertFunction("_StraightTaint_log", VoidTy, ShortTy, NULL);
       Function * log = cast<Function>(c);
-//      AttrListPtr attrListPtr = log->getAttributes();
- //     unsigned num = attr.getNumSlots();
       log->addFnAttr(llvm::Attribute::AlwaysInline);
-//      num = attr.getNumSlots();
-//*/      //errs() << *log << " num slots: "<< num << "\n";
     }
   };
 }
