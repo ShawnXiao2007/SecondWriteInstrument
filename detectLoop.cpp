@@ -29,7 +29,10 @@ void LoopDetector::extractType1Loops(){
 }
 
 void LoopDetector::extractBackedges(){
-  __FindFunctionBackedges(__F, __backedges);
+  if(__F.size()){
+    __FindFunctionBackedges(__F, __backedges);
+  }else{
+  }
 }
 
 /// FindFunctionBackedges - Analyze the specified function to find all of the

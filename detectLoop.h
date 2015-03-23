@@ -9,10 +9,17 @@ class LoopDetector{
 public:
   void displayType1Loops();
   void extractType1Loops();
+
+  void displayType2Loops();
+  void extractType2Loops();
+
   LoopDetector(Function& F);
+  
   int getNumOfBBLs();
+  
   void extractBackedges();
   int getNumOfBackedges();
+
 private:
   Function &__F;
   //a loop of a single BBL
