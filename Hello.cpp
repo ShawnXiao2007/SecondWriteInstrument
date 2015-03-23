@@ -44,11 +44,15 @@ namespace{
       for(Module::iterator i=M.begin(), e=M.end(); i!=e; i++){
         Function& F=*i;
         LoopDetector LD(F);
+        LD.extractType1Loops();
+        LD.displayType1Loops();
       }
       return true;
     };
   };
 }
+char StraightDFA_SlimInst::ID = 0;
+static RegisterPass<StraightDFA_SlimInst> B("slim-inst", "inline logging instructions");
 
 
 namespace {

@@ -2,7 +2,17 @@
 
 LoopDetector::LoopDetector(Function& F):__F(F){}
 
-void LoopDetector::displayType1Loops(){}
+void LoopDetector::displayType1Loops(){
+  errs()<<__F.getName()<<":\t\tNumber of Type 1 loops: "<<__type1Loops.size()<<"  out of "<<this->getNumOfBBLs()<<" BBLs\n";
+}
+
+int LoopDetector::getNumOfBBLs(){
+  int retVal=0;
+  for(Function::iterator i=__F.begin(), e=__F.end(); i!=e; i++){
+    retVal++;
+  }
+  return retVal;
+}
 
 void LoopDetector::extractType1Loops(){
   for(Function::iterator i=__F.begin(), e=__F.end(); i!=e; i++){
