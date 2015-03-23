@@ -46,6 +46,8 @@ namespace{
         LoopDetector LD(F);
         LD.extractType1Loops();
         LD.displayType1Loops();
+        LD.extractBackedges();
+        outs()<<"Number of backedges: "<<LD.getNumOfBackedges()<<"\n";
       }
       return true;
     };

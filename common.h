@@ -1,5 +1,10 @@
 #ifndef COMMON_H
 #define COMMON_H
+#include "llvm/Support/CFG.h"
+#include "llvm/ADT/SmallSet.h"
+#include "llvm/Analysis/LoopInfo.h"
+#include "llvm/Analysis/Dominators.h"
+#include "llvm/ADT/SmallVector.h"
 #include <unordered_set>
 #include "llvm/Module.h"
 #include "llvm/Pass.h"
