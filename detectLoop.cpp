@@ -19,9 +19,9 @@ void LoopDetector::extractType1Loops(){
     BasicBlock& bb=*i;
     TerminatorInst const * TInst=bb.getTerminator();
     for(int j=0, j_n=TInst->getNumSuccessors(); j<j_n; j++){
-      BasicBlock* succ=TInst->getSuccessor(j);
+      BasicBlock const * succ=TInst->getSuccessor(j);
       if(succ==&bb){
-        __type1Loops.insert( shared_ptr<vector<BasicBlock*>>(new vector<BasicBlock*>(1,succ)) );
+        __type1Loops.insert( shared_ptr<vector<BasicBlock const*>>(new vector<BasicBlock const*>(1,succ)) );
         break;
       }
     }
@@ -83,4 +83,29 @@ void LoopDetector::__FindFunctionBackedges(const Function &F,
 
 int LoopDetector::getNumOfBackedges(){
   return __backedges.size();
+}
+
+void LoopDetector::displayType2Loops(){
+  errs()<<__F.getName()<<":\t\tNumber of Type 2 loops: "<<__type2Loops.size()<<"  out of "<<this->getNumOfBBLs()<<" BBLs\n";
+}
+
+void LoopDetector::extractType2Loops(){
+  for(auto it=__backedges.begin(), e=__backedges.end(); it!=e; it++){
+    BasicBlock const * loopEnd=it->first;
+    BasicBlock const * loopStart=it->second;
+    if(loopEnd==loopStart){
+      //type 1 loop
+      continue;
+    }
+    BasicBlock const * tmp=loopStart;
+    while(tmp->getTerminator()->getNumSuccessors()==1){
+      tmp=tmp->getTerminator()->getSuccessor(0);
+    }
+    if(tmp==loopEnd){
+      shared_ptr< vector<BasicBlock const*> > tmp2(new vector<BasicBlock const*>() );
+      tmp2->push_back(loopStart);
+      tmp2->push_back(loopEnd);
+      __type2Loops.insert(tmp2);
+    }
+  }
 }

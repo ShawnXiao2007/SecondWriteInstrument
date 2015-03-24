@@ -46,8 +46,10 @@ namespace{
         LoopDetector LD(F);
         LD.extractType1Loops();
         LD.displayType1Loops();
+        LD.extractType2Loops();
+        LD.displayType2Loops();
         LD.extractBackedges();
-        outs()<<"Number of backedges: "<<LD.getNumOfBackedges()<<"\n";
+        outs()<<"Number of backedges: "<<LD.getNumOfBackedges()<<"\n\n";
       }
       return true;
     };

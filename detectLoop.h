@@ -23,9 +23,9 @@ public:
 private:
   Function &__F;
   //a loop of a single BBL
-  unordered_set< shared_ptr<vector<BasicBlock*>> > __type1Loops;
+  unordered_set< shared_ptr<vector<BasicBlock const *>> > __type1Loops;
   //a loop of several BBLs without branches
-  unordered_set< shared_ptr<vector<BasicBlock*>> > __type2Loops;
+  unordered_set< shared_ptr<vector<BasicBlock const *>> > __type2Loops;
   //backedges
   vector<std::pair<const BasicBlock*,const BasicBlock*> > __backedges;
   //find backedges
