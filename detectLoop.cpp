@@ -4,6 +4,11 @@ LoopDetector::LoopDetector(Function& F):__F(F), __backedges(0){}
 
 void LoopDetector::displayType1Loops(){
   errs()<<__F.getName()<<":\t\tNumber of Type 1 loops: "<<__type1Loops.size()<<"  out of "<<this->getNumOfBBLs()<<" BBLs\n";
+  for(auto i = __type1Loops.begin(), e=__type1Loops.end(); i!=e; i++){
+    auto tmp=*i;
+    assert(tmp->size()==1);
+    errs()<<*((*tmp)[0])<<"\n";
+  }
 }
 
 int LoopDetector::getNumOfBBLs(){
