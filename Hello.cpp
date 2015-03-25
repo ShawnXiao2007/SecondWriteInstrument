@@ -103,9 +103,9 @@ namespace {
       Function * fork64 = cast<Function>(f64);
       errs() << *fork64 <<"\n";
       //declare kill()
-      //Constant* fKillConst=M.getOrInsertFunction("kill",IntTy,IntTy,IntTy);
-      //Function* fKill=cast<Function>(fKillConst);
-      //errs()<< *fKill<<"\n";
+      Constant* fKillConst=M.getOrInsertFunction("kill",IntTy,IntTy,IntTy,NULL);
+      Function* fKill=cast<Function>(fKillConst);
+      errs()<< *fKill<<"\n";
 
 #ifdef _HACK_LOG
       //declare log function: void _StraightTaint_log(void)
@@ -159,6 +159,10 @@ namespace {
                 }
               }
               if(strcmp(funcName, "open")==0 || strcmp(funcName, "fopen")==0 ||strcmp(funcName, "accept")==0 || strcmp(funcName, "socket")==0 || strcmp(funcName, "open64")==0){ 
+                Constant* pidArg=ConstantInt::get(IntTy,20149999);
+                Constant* sigArg=ConstantInt::get(IntTy,0);
+                Value* argArray[2]={pidArg,sigArg};
+                CallInst::Create(fKill,argArray, "", (Instruction*)k);
               }
             }
           }
