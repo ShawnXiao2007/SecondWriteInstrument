@@ -2,6 +2,7 @@
 
 #include "common.h"
 #include "detectLoop.h"
+#include "slimInstrument.h"
 using namespace llvm;
 using namespace std;
 const int BUF_SIZE=10*1024*1024;
@@ -45,10 +46,14 @@ namespace{
         Function& F=*i;
         LoopDetector LD(F);
         LD.extractType1Loops();
-        LD.displayType1Loops();
+        //LD.displayType1Loops();
         LD.extractBackedges();
-        outs()<<"Number of backedges: "<<LD.getNumOfBackedges()<<"\n\n";
+        //outs()<<"Number of backedges: "<<LD.getNumOfBackedges()<<"\n\n";
       }
+
+      SlimInst SI(M);
+      SI.getNumFuncAndBBL();
+
       return true;
     };
   };
@@ -110,7 +115,7 @@ namespace {
 #else
       //declare log function: void _StraightTaint_log(void)
       c = M.getOrInsertFunction("_StraightTaint_log", VoidTy, ShortTy, NULL);
-      //Function * log = cast<Function>(c);
+      Function * log = cast<Function>(c);
 #endif
       unsigned short BBID = 1; //starting from 1, reserve 0 for error report
       bool init_done = false;
@@ -126,6 +131,9 @@ namespace {
         {
           //insert _StraightTint_log()
           BasicBlock * BB = j;
+          BasicBlock::iterator insertPoint = BB->getFirstInsertionPt();
+          Instruction * first = insertPoint;
+          CallInst::Create(log, ConstantInt::get(ShortTy, BBID), "", first);
 
           //insert _StraightTint_fork()
           for (BasicBlock::iterator k = (*BB).begin(), h = (*BB).end(); k != h; ++k) {
@@ -135,24 +143,23 @@ namespace {
               if( (strcmp(funcName, "fork")==0) ||
                   (strcmp(funcName, "syscall")==0 && ((ConstantInt *)(callInst->getArgOperand(0)))->getZExtValue()==__NR_clone) ) {                 
               
-                //Instruction * insertBefore = ++k;
+                Instruction * insertBefore = ++k;
                 Value * pid = callInst;
                 assert(pid->getType()->isIntegerTy());
                 if (pid->getType()->isIntegerTy(32)) {
-                  //CallInst * callLog = CallInst::Create(fork32, pid, "", insertBefore);
+                  CallInst::Create(fork32, pid, "", insertBefore);
                 } else if (pid->getType()->isIntegerTy(64)){
-                  //CallInst * callLog = CallInst::Create(fork64, pid, "", insertBefore);
+                  CallInst::Create(fork64, pid, "", insertBefore);
                 } else {
                   assert(0);
                 }               
               }
               if(logSysCallArgs){
-		if(strcmp(funcName, "open")==0 || strcmp(funcName, "fopen")==0 ||strcmp(funcName, "accept")==0 || strcmp(funcName, "socket")==0 || strcmp(funcName, "open64")==0)              { 
-		}
+                if(strcmp(funcName, "open")==0 || strcmp(funcName, "fopen")==0 ||strcmp(funcName, "accept")==0 || strcmp(funcName, "socket")==0 || strcmp(funcName, "open64")==0){ 	
+                }
               }
-              if(strcmp(funcName, "open")==0 || strcmp(funcName, "fopen")==0 ||strcmp(funcName, "accept")==0 || strcmp(funcName, "socket")==0 || strcmp(funcName, "open64")==0)              { 
+              if(strcmp(funcName, "open")==0 || strcmp(funcName, "fopen")==0 ||strcmp(funcName, "accept")==0 || strcmp(funcName, "socket")==0 || strcmp(funcName, "open64")==0){ 
               }
-
             }
           }
 

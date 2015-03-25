@@ -8,6 +8,12 @@ using namespace std;
 class SlimInst{
 public:
   SlimInst(Module &M):__M(M){};
+
+  //output max number of functions and basic blocks
+  void getNumFuncAndBBL();
+
+  //
+
 private:
   Module &__M;
 };
