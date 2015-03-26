@@ -16,25 +16,32 @@ public:
   //Function ID : {<Loop ID : Loop Type>}
   void outputToFile();
 
+  //initilization
+  void __initEverything();
+  //part 1
   Module &__M;
-
+  //part 2
   unsigned long __maxF;
   unsigned long __maxB;
-  unsigned long __numLoops;
-  Function const * __pFofMaxB;
+  Function const * __pFofMaxB;//a pointer to the function that has the largest number of BBLs
   void __initMaxFandB();
-  
-  map<int, string> FunctionID2Name;
+  //part 3
+  //0~9 is reserved
+  //10~10+__maxF-1 is function IDs
+  //10+__maxF~10+__maxF+__maxB-1 is BBLIDs
+  //10+__maxF+__maxB~ is loop IDs
+  //The input Module could have BBL without name, if so, set the name as FuncName_BBL_#
+  map<string, int> FunctionName2ID;
   map<int, map<int, string>> BBLID2Name;
   map<int, map<int, int>> LoopID2Type;
-
-
-  void initFunctionID2Name();
+  void __initFunctionName2ID();
 };
 
 class SlimInst{
 public:
-  SlimInst(Module &M):__M(M){};
+  SlimInst(Module &M, ModuleMeta const * pMeta):__M(M), __pMeta(pMeta){
+    assert(__pMeta);
+  };
 
   //output max number of functions and basic blocks
   void getNumFuncAndBBL();

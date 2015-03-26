@@ -28,3 +28,21 @@ void ModuleMeta::__initMaxFandB(){
   __maxB=maxB;
   __pFofMaxB=p;
 }
+
+void ModuleMeta::__initFunctionName2ID(){
+  int id=10;
+  for(auto i=__M.begin(), i_e=__M.end(); i!=i_e; i++){
+    Function& F=*i;
+    if(F.size()==0){
+      continue;
+    }
+    string fname(F.getName().data());
+    FunctionName2ID.insert(pair<string,int>(fname, id));
+    id++;
+  }
+  assert(id=10+__maxF);
+}
+void ModuleMeta::__initEverything(){
+  __initMaxFandB();
+  __initFunctionName2ID();
+}
