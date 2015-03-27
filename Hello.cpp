@@ -51,7 +51,7 @@ namespace{
         //outs()<<"Number of backedges: "<<LD.getNumOfBackedges()<<"\n\n";
       }
 
-      SlimInst SI(M);
+      SlimInst SI(M, NULL);
       SI.getNumFuncAndBBL();
 
       return true;

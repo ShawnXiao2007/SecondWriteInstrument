@@ -114,3 +114,14 @@ void LoopDetector::extractType2Loops(){
     }
   }
 }
+
+shared_ptr< unordered_set< BasicBlock const *  >> LoopDetector::getType1Loops(){
+  shared_ptr< unordered_set< BasicBlock const *> > retVal(new unordered_set< BasicBlock const *>() );
+  for(auto i=__type1Loops.begin(), i_e=__type1Loops.end(); i!=i_e; i++){
+    auto v=*(*i);
+    assert(v.size()!=0);
+    retVal->insert(v[0]);
+  }
+  return retVal;
+}
+

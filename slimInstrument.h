@@ -1,5 +1,5 @@
 #include "common.h"
-
+#include "detectLoop.h"
 #ifndef SLIMINST_H
 #define SLIMINST_H
 using namespace llvm;
@@ -29,12 +29,14 @@ public:
   //0~9 is reserved
   //10~10+__maxF-1 is function IDs
   //10+__maxF~10+__maxF+__maxB-1 is BBLIDs
-  //10+__maxF+__maxB~ is loop IDs
+  //the BBID of the start of the loop is loop ID
   //The input Module could have BBL without name, if so, set the name as FuncName_BBL_#
   map<string, int> FunctionName2ID;
-  map<int, map<int, string>> BBLID2Name;
-  map<int, map<int, int>> LoopID2Type;
+  map<string, map<int, string>> BBLID2Name;
+  map<string, map<int, int>> LoopID2Type;
   void __initFunctionName2ID();
+  void __initBBLID2Name();
+  void __initLoopID2Type();
 };
 
 class SlimInst{

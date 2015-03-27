@@ -37,12 +37,51 @@ void ModuleMeta::__initFunctionName2ID(){
       continue;
     }
     string fname(F.getName().data());
+    assert(FunctionName2ID.find(fname)==FunctionName2ID.end());
     FunctionName2ID.insert(pair<string,int>(fname, id));
     id++;
   }
   assert(id=10+__maxF);
 }
+
+void ModuleMeta::__initBBLID2Name(){
+  for(auto i=__M.begin(), i_e=__M.end(); i!=i_e; i++){
+    int id=10+__maxF;
+    if(i->size()==0){
+      continue;
+    }
+    string fName(i->getName().data());
+    //insert the function to BBLID2Name
+    assert(BBLID2Name.find(fName)==BBLID2Name.end());
+    BBLID2Name.insert(pair<string, map<int, string>>(fName, map<int,string>()) );
+    map<int, string> &tmp=BBLID2Name[fName];
+    //insert the function to LoopID2Type
+    assert(LoopID2Type.find(fName)==LoopID2Type.end());
+    LoopID2Type.insert(pair<string, map<int,int>>(fName, map<int,int>()));
+    map<int, int> &tmp2=LoopID2Type[fName];
+    //Use a loop detector to detect the loops
+    LoopDetector LD(*i);
+    auto loops=LD.getType1Loops();
+    
+    for(auto j=i->begin(), j_e=i->end(); j!=j_e; j++){
+      BasicBlock& bbl=*j;
+      string bblName(j->getName().data());
+      tmp.insert(pair<int,string>(id, bblName));
+      if(loops->find(&bbl)!=loops->end()){
+        tmp2[id]=1;
+      }
+      id++;
+    }
+  }
+}
+
 void ModuleMeta::__initEverything(){
   __initMaxFandB();
   __initFunctionName2ID();
+  __initBBLID2Name();
+}
+
+void SlimInst::__instFunc(Function *  F){
+  void __instEntryBBL(F);
+  void __instType1LoopBBL(NULL);
 }
