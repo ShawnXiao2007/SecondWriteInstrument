@@ -82,6 +82,12 @@ void ModuleMeta::__initEverything(){
 }
 
 void SlimInst::__instFunc(Function *  F){
-  void __instEntryBBL(F);
-  void __instType1LoopBBL(NULL);
+  __instEntryBBL(F);
+  __instType1LoopBBL(NULL);
 }
+
+void SlimInst::__instEntryBBL(Function * F){
+}
+void SlimInst::__instType1LoopBBL(BasicBlock * BBL){
+}
+

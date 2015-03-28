@@ -8,17 +8,14 @@ using namespace std;
 class LoopDetector{
 public:
   void displayType1Loops();
-  void extractType1Loops();
   shared_ptr< unordered_set< BasicBlock const * > > getType1Loops();
 
   void displayType2Loops();
-  void extractType2Loops();
+  shared_ptr< unordered_set< BasicBlock const * > > getType2Loops();
 
   LoopDetector(Function& F);
   
   int getNumOfBBLs();
-  
-  void extractBackedges();
   int getNumOfBackedges();
 
 private:
@@ -31,5 +28,8 @@ private:
   vector< pair<const BasicBlock*,const BasicBlock*> > __backedges;
   //find backedges
   void __FindFunctionBackedges(const Function &F, vector<std::pair<const BasicBlock*,const BasicBlock*> > &Result); 
+  void __extractType1Loops();
+  void __extractType2Loops();
+  void __extractBackedges();
 };
 #endif

@@ -45,9 +45,7 @@ namespace{
       for(Module::iterator i=M.begin(), e=M.end(); i!=e; i++){
         Function& F=*i;
         LoopDetector LD(F);
-        LD.extractType1Loops();
         //LD.displayType1Loops();
-        LD.extractBackedges();
         //outs()<<"Number of backedges: "<<LD.getNumOfBackedges()<<"\n\n";
       }
 

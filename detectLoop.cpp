@@ -1,6 +1,10 @@
 #include "detectLoop.h"
 
-LoopDetector::LoopDetector(Function& F):__F(F), __backedges(0){}
+LoopDetector::LoopDetector(Function& F):__F(F), __backedges(0){
+  __extractBackedges();
+  __extractType1Loops();
+  __extractType2Loops();
+}
 
 void LoopDetector::displayType1Loops(){
   errs()<<__F.getName()<<":\t\tNumber of Type 1 loops: "<<__type1Loops.size()<<"  out of "<<this->getNumOfBBLs()<<" BBLs\n";
@@ -19,7 +23,7 @@ int LoopDetector::getNumOfBBLs(){
   return retVal;
 }
 
-void LoopDetector::extractType1Loops(){
+void LoopDetector::__extractType1Loops(){
   for(Function::iterator i=__F.begin(), e=__F.end(); i!=e; i++){
     BasicBlock& bb=*i;
     TerminatorInst const * TInst=bb.getTerminator();
@@ -33,7 +37,7 @@ void LoopDetector::extractType1Loops(){
   }
 }
 
-void LoopDetector::extractBackedges(){
+void LoopDetector::__extractBackedges(){
   if(__F.size()){
     __FindFunctionBackedges(__F, __backedges);
   }else{
@@ -94,7 +98,7 @@ void LoopDetector::displayType2Loops(){
   errs()<<__F.getName()<<":\t\tNumber of Type 2 loops: "<<__type2Loops.size()<<"  out of "<<this->getNumOfBBLs()<<" BBLs\n";
 }
 
-void LoopDetector::extractType2Loops(){
+void LoopDetector::__extractType2Loops(){
   for(auto it=__backedges.begin(), e=__backedges.end(); it!=e; it++){
     BasicBlock const * loopEnd=it->first;
     BasicBlock const * loopStart=it->second;
@@ -102,11 +106,11 @@ void LoopDetector::extractType2Loops(){
       //type 1 loop
       continue;
     }
-    BasicBlock const * tmp=loopStart;
-    while(tmp->getTerminator()->getNumSuccessors()==1){
-      tmp=tmp->getTerminator()->getSuccessor(0);
+    BasicBlock const * tmp=loopEnd;
+    while(tmp->getSinglePredecessor()){
+      tmp=tmp->getSinglePredecessor();
     }
-    if(tmp==loopEnd){
+    if(tmp==loopStart){
       shared_ptr< vector<BasicBlock const*> > tmp2(new vector<BasicBlock const*>() );
       tmp2->push_back(loopStart);
       tmp2->push_back(loopEnd);
@@ -125,3 +129,12 @@ shared_ptr< unordered_set< BasicBlock const *  >> LoopDetector::getType1Loops(){
   return retVal;
 }
 
+shared_ptr< unordered_set< BasicBlock const *  >> LoopDetector::getType2Loops(){
+  shared_ptr< unordered_set< BasicBlock const *> > retVal(new unordered_set< BasicBlock const *>() );
+  for(auto i=__type2Loops.begin(), i_e=__type2Loops.end(); i!=i_e; i++){
+    auto v=*(*i);
+    assert(v.size()!=0);
+    retVal->insert(v[0]);
+  }
+  return retVal;
+}

@@ -7,7 +7,9 @@ using namespace std;
 
 class ModuleMeta{
 public:
-  ModuleMeta(Module &M):__M(M), __maxF(0), __maxB(0), __pFofMaxB(0){};
+  ModuleMeta(Module &M):__M(M), __maxF(0), __maxB(0), __pFofMaxB(0){
+    __initEverything();
+  };
   //output the meta information
   //Function (or BBL or Loop) ID is a numerical ID
   //For BBL without name, set one
