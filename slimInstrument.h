@@ -35,10 +35,10 @@ public:
   //The input Module could have BBL without name, if so, set the name as FuncName_BBL_#
   map<string, int> FunctionName2ID;
   map<string, map<int, string>> BBLID2Name;
+  map<string, map<int, BasicBlock*>> BBLID2Addr;
   map<string, map<int, int>> LoopID2Type;
   void __initFunctionName2ID();
   void __initBBLID2Name();
-  void __initLoopID2Type();
 };
 
 class ModuleMembers{

@@ -59,6 +59,10 @@ void ModuleMeta::__initBBLID2Name(){
     assert(LoopID2Type.find(fName)==LoopID2Type.end());
     LoopID2Type.insert(pair<string, map<int,int>>(fName, map<int,int>()));
     map<int, int> &tmp2=LoopID2Type[fName];
+    //insert the function to BBLID2Addr
+    assert(BBLID2Addr.find(fName)==BBLID2Addr.end() );
+    BBLID2Addr.insert(pair<string, map<int, BasicBlock*> >(fName, map<int, BasicBlock*>() ) );
+    map<int, BasicBlock*> &tmp3=BBLID2Addr[fName];
     //Use a loop detector to detect the loops
     LoopDetector LD(*i);
     auto loops=LD.getType1Loops();
@@ -70,6 +74,8 @@ void ModuleMeta::__initBBLID2Name(){
       if(loops->find(&bbl)!=loops->end()){
         tmp2[id]=1;
       }
+      
+      tmp3.insert(pair<int, BasicBlock*>(id, &bbl));
       id++;
     }
   }
@@ -83,6 +89,7 @@ void ModuleMeta::__initEverything(){
 
 void SlimInst::__instFunc(Function *  F){
   __instEntryBBL(F);
+  
   __instType1LoopBBL(NULL);
 }
 
