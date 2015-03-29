@@ -88,26 +88,51 @@ void ModuleMeta::__initEverything(){
 }
 
 void SlimInst::__instFunc(Function *  F){
-  __instEntryBBL(F);
-  
-  __instType1LoopBBL(NULL);
-}
-
-void SlimInst::__instEntryBBL(Function * F){
-  BasicBlock& entryBBL=F->getEntryBlock();
-  auto insertPoint=entryBBL.getFirstInsertionPt();
-  Instruction* first=insertPoint;
+  if(F->size()==0){
+    return;
+  }
+  BasicBlock& entryBBL=F->getEntryBlock(); 
   //get function ID
   string fName(F->getName().data());
   auto tmp=__pMeta->FunctionName2ID;
-  unsigned short BBID=tmp.find(fName)->second;
+  unsigned short FuncID=tmp.find(fName)->second;
+  //get addr 2 bbid
+  map<BasicBlock*, unsigned short> addr2bbid;
+  auto& FBBLID2Addr=__pMeta->BBLID2Addr;
+  const map<int, BasicBlock*> & bbid2addr=FBBLID2Addr.find(fName)->second;
+  for(auto i=bbid2addr.begin(), i_e=bbid2addr.end(); i!=i_e; i++){
+    addr2bbid.insert(make_pair(i->second, i->first));
+  }
+  //get LoopID 2 Type
+  const map<int, int>& loopID2Type=__pMeta->LoopID2Type.find(fName)->second;
+  //instrument basic blocks one by one
+  for(auto i=F->begin(), i_e=F->end(); i!=i_e; i++){
+    BasicBlock* pBBL=i;
+    unsigned short iID=addr2bbid[pBBL];
+    if(pBBL==&entryBBL){
+      __instLogBBL(pBBL, FuncID);      
+    }else if(loopID2Type.find(iID)==loopID2Type.end()){
+      //non loop
+      __instLogBBL(pBBL, iID);
+    }else{
+      //loop
+
+    }
+  }
+}
+
+void SlimInst::__instType1LoopBBL(BasicBlock * BBL){
+}
+
+void SlimInst::__instLogBBL(BasicBlock* pBBL, unsigned short BBID){
+  BasicBlock& BBL=*pBBL;
+  auto insertPoint=BBL.getFirstInsertionPt();
+  Instruction* first=insertPoint;
+  //get function ID
   //insert instruction
   CallInst::Create(__pMbr->log, ConstantInt::get(__pMbr->shortTy, BBID),  "", first);
   
-}
-void SlimInst::__instType1LoopBBL(BasicBlock * BBL){
-}
-void SlimInst::__instNonLoopBBL(BasicBlock* BBL){
+
 }
 
 ModuleMembers::ModuleMembers(Module& M): __M(M), voidTy(NULL), shortTy(NULL), log(NULL){
