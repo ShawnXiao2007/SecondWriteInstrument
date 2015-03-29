@@ -121,7 +121,17 @@ void SlimInst::__instFunc(Function *  F){
   }
 }
 
-void SlimInst::__instType1LoopBBL(BasicBlock * BBL){
+void SlimInst::__instType1LoopBBL(Function& F, BasicBlock * pBBL, unsigned short loopID){
+  assert(!pBBL->isLandingPad());
+  //create a basic block
+  LLVMContext& context=F.getContext();
+  BasicBlock* newBBL=BasicBlock::Create(context, "", &F, pBBL);
+  //log loopID, create a number
+  //get predecessor 
+  //change target
+  //get successor
+  //create a block and jump to the successor
+  //
 }
 
 void SlimInst::__instLogBBL(BasicBlock* pBBL, unsigned short BBID){
@@ -131,8 +141,6 @@ void SlimInst::__instLogBBL(BasicBlock* pBBL, unsigned short BBID){
   //get function ID
   //insert instruction
   CallInst::Create(__pMbr->log, ConstantInt::get(__pMbr->shortTy, BBID),  "", first);
-  
-
 }
 
 ModuleMembers::ModuleMembers(Module& M): __M(M), voidTy(NULL), shortTy(NULL), log(NULL){

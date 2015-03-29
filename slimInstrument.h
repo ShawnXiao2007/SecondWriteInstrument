@@ -77,6 +77,6 @@ private:
 
   //instrumentation
   void __instLogBBL(BasicBlock * BBL, unsigned short BBID);
-  void __instType1LoopBBL(BasicBlock * BBL);
+  void __instType1LoopBBL(Function& F, BasicBlock * BBL, unsigned short loopID);
 };
 #endif
