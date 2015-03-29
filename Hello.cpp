@@ -49,8 +49,8 @@ namespace{
         //outs()<<"Number of backedges: "<<LD.getNumOfBackedges()<<"\n\n";
       }
 
-      SlimInst SI(M, NULL);
-      SI.displayNumFuncAndBBL();
+      //SlimInst SI(M, NULL);
+      //SI.displayNumFuncAndBBL();
 
       return true;
     };

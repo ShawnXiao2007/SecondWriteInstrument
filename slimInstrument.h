@@ -41,10 +41,23 @@ public:
   void __initLoopID2Type();
 };
 
+class ModuleMembers{
+  public:
+    ModuleMembers(Module& M);
+    
+    Module& __M;
+    Type* voidTy;
+    Type* shortTy;
+    Function* log;
+  private:
+    bool checkRep();
+};
+
 class SlimInst{
 public:
-  SlimInst(Module &M, ModuleMeta const * pMeta):__M(M), __pMeta(pMeta){
+  SlimInst(Module &M, ModuleMeta const * pMeta, ModuleMembers const * pMbr):__M(M), __pMeta(pMeta), __pMbr(pMbr){
     assert(__pMeta);
+    assert(__pMbr);
   };
 
   //output max number of functions and basic blocks
@@ -56,6 +69,7 @@ public:
 private:
   Module &__M;
   ModuleMeta const* __pMeta;
+  ModuleMembers const* __pMbr;
   //insert instructions to entry block
   //insert instructions to non-loop block
   //insert basic blocks before and after loop blocks

@@ -87,7 +87,36 @@ void SlimInst::__instFunc(Function *  F){
 }
 
 void SlimInst::__instEntryBBL(Function * F){
+  BasicBlock& entryBBL=F->getEntryBlock();
+  auto insertPoint=entryBBL.getFirstInsertionPt();
+  Instruction* first=insertPoint;
+  //get function ID
+  string fName(F->getName().data());
+  auto tmp=__pMeta->FunctionName2ID;
+  unsigned short BBID=tmp.find(fName)->second;
+  //insert instruction
+  CallInst::Create(__pMbr->log, ConstantInt::get(__pMbr->shortTy, BBID),  "", first);
+  
 }
 void SlimInst::__instType1LoopBBL(BasicBlock * BBL){
 }
+void SlimInst::__instNonLoopBBL(BasicBlock* BBL){
+}
 
+ModuleMembers::ModuleMembers(Module& M): __M(M), voidTy(NULL), shortTy(NULL), log(NULL){
+  //voidTy
+  voidTy = Type::getVoidTy(M.getContext());
+  //shortTy
+  shortTy = IntegerType::get(M.getContext(), 16);
+  //log
+  Constant * c = M.getOrInsertFunction("_StraightTaint_log", voidTy, shortTy, NULL);
+  log = cast<Function>(c);
+  //check all the members
+  assert(checkRep());
+}
+
+bool ModuleMembers::checkRep(){
+  assert(shortTy);
+  assert(log);
+  return true;
+}
