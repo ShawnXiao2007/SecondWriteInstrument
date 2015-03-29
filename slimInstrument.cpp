@@ -1,6 +1,6 @@
 #include "slimInstrument.h"
 
-void SlimInst::getNumFuncAndBBL(){
+void SlimInst::displayNumFuncAndBBL(){
   assert(__pMeta); 
   errs()<<"Num of Func: "<<__pMeta->__maxF<<"\nMax num of BBL: "<<__pMeta->__maxB<<" of function: "<<__pMeta->__pFofMaxB->getName()<<"\n";
 }

@@ -48,7 +48,7 @@ public:
   };
 
   //output max number of functions and basic blocks
-  void getNumFuncAndBBL();
+  void displayNumFuncAndBBL();
 
   //run the instrumentation
   void run();

@@ -50,7 +50,7 @@ namespace{
       }
 
       SlimInst SI(M, NULL);
-      SI.getNumFuncAndBBL();
+      SI.displayNumFuncAndBBL();
 
       return true;
     };
