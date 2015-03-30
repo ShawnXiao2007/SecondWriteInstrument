@@ -7,7 +7,7 @@ using namespace std;
 
 class ModuleMeta{
 public:
-  ModuleMeta(Module &M):__M(M), __maxF(0), __maxB(0), __pFofMaxB(0){
+  ModuleMeta(Module &M):__M(M), __maxF(0), __maxB(0), __pFofMaxB(0), __numBBLs(0), __numLoops(0), __numType1Loops(0), __numFuncs(0){
     __initEverything();
   };
   //output the meta information
@@ -39,6 +39,13 @@ public:
   map<string, map<int, int>> LoopID2Type;
   void __initFunctionName2ID();
   void __initBBLID2Name();
+
+  //info
+  unsigned int __numBBLs;
+  unsigned int __numLoops;
+  unsigned int __numType1Loops;
+  unsigned int __numFuncs;
+  void displayStatInfo();
 };
 
 class ModuleMembers{

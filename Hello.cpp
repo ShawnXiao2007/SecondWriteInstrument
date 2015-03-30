@@ -42,16 +42,8 @@ namespace{
     static char ID;
     StraightDFA_SlimInst() : ModulePass(ID){};
     virtual bool runOnModule(Module &M){
-      for(Module::iterator i=M.begin(), e=M.end(); i!=e; i++){
-        Function& F=*i;
-        LoopDetector LD(F);
-        //LD.displayType1Loops();
-        //outs()<<"Number of backedges: "<<LD.getNumOfBackedges()<<"\n\n";
-      }
-
-      //SlimInst SI(M, NULL);
-      //SI.displayNumFuncAndBBL();
-
+      ModuleMeta MM(M);
+      MM.displayStatInfo();
       return true;
     };
   };

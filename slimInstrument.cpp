@@ -46,6 +46,9 @@ void ModuleMeta::__initFunctionName2ID(){
 
 void ModuleMeta::__initBBLID2Name(){
   for(auto i=__M.begin(), i_e=__M.end(); i!=i_e; i++){
+    //update __numFuncs
+    __numFuncs++;
+
     int id=10+__maxF;
     if(i->size()==0){
       continue;
@@ -66,8 +69,14 @@ void ModuleMeta::__initBBLID2Name(){
     //Use a loop detector to detect the loops
     LoopDetector LD(*i);
     auto loops=LD.getType1Loops();
-    
+    //update num Loops and Type1Loops
+    __numLoops+=LD.getNumOfBackedges();
+    __numType1Loops+=loops->size();
+
     for(auto j=i->begin(), j_e=i->end(); j!=j_e; j++){
+      //update num BBLs
+      __numBBLs++;
+
       BasicBlock& bbl=*j;
       string bblName(j->getName().data());
       tmp.insert(pair<int,string>(id, bblName));
@@ -197,4 +206,11 @@ bool ModuleMembers::checkRep(){
   assert(shortTy);
   assert(log);
   return true;
+}
+
+void ModuleMeta::displayStatInfo(){
+  errs()<<"Num of BBLs: "<<__numBBLs<<"\n";
+  errs()<<"Num of Loops: "<<__numLoops<<"\n";
+  errs()<<"Num of Type1Loops: "<<__numType1Loops<<"\n";
+  errs()<<"Num of Funcs: "<<__numFuncs<<"\n";
 }
