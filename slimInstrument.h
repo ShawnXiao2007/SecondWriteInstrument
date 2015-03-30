@@ -48,6 +48,7 @@ class ModuleMembers{
     Module& __M;
     Type* voidTy;
     Type* shortTy;
+    Type* intTy;
     Function* log;
   private:
     bool checkRep();

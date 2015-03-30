@@ -126,8 +126,26 @@ void SlimInst::__instType1LoopBBL(Function& F, BasicBlock * pBBL, unsigned short
   //create a basic block
   LLVMContext& context=F.getContext();
   BasicBlock* newBBL=BasicBlock::Create(context, "", &F, pBBL);
-  //log loopID, create a number
-  //get predecessor 
+  //log loopID, create a number, terminate
+  CallInst::Create(__pMbr->log, ConstantInt::get(__pMbr->shortTy, loopID),  "inst1_logLoopID", newBBL);
+  AllocaInst* inst2_var=new AllocaInst(__pMbr->intTy, nullptr, "inst2_var", newBBL);
+  BranchInst* inst3_br=BranchInst::Create(pBBL, newBBL);
+  //get predecessor
+  for(auto i=pred_begin(pBBL), i_e=pred_end(pBBL); i!=i_e; i++){
+    BasicBlock* pred=*i;
+    if(pred==pBBL){
+      continue;//self loop
+    }else{
+      TerminatorInst* ti=pBBL->getTerminator();
+      if(BranchInst* bi=dyn_cast<BranchInst>(ti)){
+      }else if(IndirectBrInst* ibi=dyn_cast<IndirectBrInst>(ti)){
+      }else if(SwitchInst* si=dyn_cast<SwitchInst>(ti)){
+      }else{
+        errs()<<"A special terminator inst: \n"<<*ti<<"\n";
+        assert(0);
+      }
+    }
+  }
   //change target
   //get successor
   //create a block and jump to the successor
@@ -148,6 +166,8 @@ ModuleMembers::ModuleMembers(Module& M): __M(M), voidTy(NULL), shortTy(NULL), lo
   voidTy = Type::getVoidTy(M.getContext());
   //shortTy
   shortTy = IntegerType::get(M.getContext(), 16);
+  //intTy
+  intTy = IntegerType::get(M.getContext(), 32);
   //log
   Constant * c = M.getOrInsertFunction("_StraightTaint_log", voidTy, shortTy, NULL);
   log = cast<Function>(c);
