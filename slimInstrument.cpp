@@ -134,7 +134,7 @@ void SlimInst::__instType1LoopBBL(Function& F, BasicBlock * pBBL, unsigned short
   assert(!pBBL->isLandingPad());
   //create a basic block
   LLVMContext& context=F.getContext();
-  BasicBlock* newBBL=BasicBlock::Create(context, "", &F, pBBL);
+  BasicBlock* newBBL=BasicBlock::Create(context, "StraightTaint_Type1Loop", &F, pBBL);
   //log loopID, create a number, terminate
   CallInst::Create(__pMbr->log, ConstantInt::get(__pMbr->shortTy, loopID),  "inst1_logLoopID", newBBL);
   AllocaInst* inst2_var=new AllocaInst(__pMbr->intTy, nullptr, "inst2_var", newBBL);
@@ -213,4 +213,14 @@ void ModuleMeta::displayStatInfo(){
   errs()<<"Num of Loops: "<<__numLoops<<"\n";
   errs()<<"Num of Type1Loops: "<<__numType1Loops<<"\n";
   errs()<<"Num of Funcs: "<<__numFuncs<<"\n";
+}
+
+void SlimInst::run(){
+  for(auto i=__M.begin(), i_e=__M.end(); i!=i_e; i++){
+    Function& F=*i;
+    if(F.size()==0){
+      continue;
+    }
+    __instFunc(&F);
+  }
 }

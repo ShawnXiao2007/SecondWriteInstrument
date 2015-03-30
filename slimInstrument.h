@@ -16,7 +16,7 @@ public:
   //Function ID : Function Name
   //Function ID : {<BBL ID : BBL Name>}
   //Function ID : {<Loop ID : Loop Type>}
-  void outputToFile();
+  void outputModuleMetaToFile();
 
   //initilization
   void __initEverything();

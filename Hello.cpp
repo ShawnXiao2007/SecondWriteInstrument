@@ -44,6 +44,9 @@ namespace{
     virtual bool runOnModule(Module &M){
       ModuleMeta MM(M);
       MM.displayStatInfo();
+      ModuleMembers MMb(M);
+      SlimInst SI(M, &MM, &MMb);
+      SI.run();
       return true;
     };
   };
