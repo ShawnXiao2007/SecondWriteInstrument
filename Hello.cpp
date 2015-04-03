@@ -45,6 +45,7 @@ namespace{
       ModuleMeta MM(M);
       MM.displayStatInfo();
       ModuleMembers MMb(M);
+      MM.outputModuleMetaToFile();
       SlimInst SI(M, &MM, &MMb);
       SI.run();
       return true;

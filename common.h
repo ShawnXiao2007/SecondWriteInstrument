@@ -32,6 +32,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <iostream>
+#include <fstream>
 #include <list>
 #include <queue>
 #include <stack>

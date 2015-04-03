@@ -138,8 +138,10 @@ void SlimInst::__instType1LoopBBL(Function& F, BasicBlock * pBBL, unsigned short
   //log loopID, create a number, terminate
   CallInst::Create(__pMbr->log, ConstantInt::get(__pMbr->shortTy, loopID),  "inst1_logLoopID", newBBL);
   AllocaInst* inst2_var=new AllocaInst(__pMbr->intTy, nullptr, "inst2_var", newBBL);
-  BranchInst* inst3_br=BranchInst::Create(pBBL, newBBL);
+  LoadInst* inst3_load=new LoadInst(inst2_var, "inst3_load", newBBL);
+  BranchInst* inst4_br=BranchInst::Create(pBBL, newBBL);
   //get predecessor
+  //change target
   for(auto i=pred_begin(pBBL), i_e=pred_end(pBBL); i!=i_e; i++){
     BasicBlock* pred=*i;
     if(pred==pBBL){
@@ -173,7 +175,6 @@ void SlimInst::__instType1LoopBBL(Function& F, BasicBlock * pBBL, unsigned short
       }
     }
   }
-  //change target
   //get successor
   //create a block and jump to the successor
   //
@@ -222,5 +223,21 @@ void SlimInst::run(){
       continue;
     }
     __instFunc(&F);
+  }
+}
+
+void ModuleMeta::outputModuleMetaToFile(){
+  for(auto i=FunctionName2ID.begin(), i_e=FunctionName2ID.end(); i!=i_e; i++){
+    string fname=i->first;
+    int fid=i->second;
+    errs()<<fname.c_str()<<"\t"<<fid<<"\n";
+    auto &tmp=BBLID2Name[i->first];
+    auto &tmp2=LoopID2Type[i->first];
+    for(auto j=tmp.begin(), j_e=tmp.end(); j!=j_e; j++){
+      errs()<<"\t"<<j->first<<"\t"<<j->second.c_str()<<"\n";
+    }
+    for(auto k=tmp2.begin(), k_e=tmp2.end(); k!=k_e; k++){
+      errs()<<"\t"<<k->first<<"\t"<<k->second<<"\n";
+    }
   }
 }
