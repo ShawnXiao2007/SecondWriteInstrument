@@ -138,10 +138,16 @@ void SlimInst::__instType1LoopBBL(Function& F, BasicBlock * pBBL, unsigned short
   //log loopID, create a number, terminate
   CallInst::Create(__pMbr->log, ConstantInt::get(__pMbr->shortTy, loopID),  "inst1_logLoopID", newBBL);
   AllocaInst* inst2_var=new AllocaInst(__pMbr->intTy, nullptr, "inst2_var", newBBL);
-  LoadInst* inst3_load=new LoadInst(inst2_var, "inst3_load", newBBL);
-  BranchInst* inst4_br=BranchInst::Create(pBBL, newBBL);
-  //get predecessor
-  //change target
+  BranchInst* inst3_br=BranchInst::Create(pBBL, newBBL);
+  //insert an instruction to pBBL to increment the inst3_load
+  auto insertPt_increment=pBBL->getFirstInsertionPt();
+  Instruction* insertBefore_increment=insertPt_increment;
+  IRBuilder<> builder(insertBefore_increment);
+  Value* counter=builder.CreateLoad(inst2_var);
+  Value* CI_one=ConstantInt::get(__pMbr->intTy, 1);
+  Value* add_one=builder.CreateAdd(counter, CI_one);
+  builder.CreateStore(add_one, inst2_var);
+  //get predecessor and change target
   for(auto i=pred_begin(pBBL), i_e=pred_end(pBBL); i!=i_e; i++){
     BasicBlock* pred=*i;
     if(pred==pBBL){
@@ -176,7 +182,24 @@ void SlimInst::__instType1LoopBBL(Function& F, BasicBlock * pBBL, unsigned short
     }
   }
   //get successor
-  //create a block and jump to the successor
+  TerminatorInst* termi=pBBL->getTerminator();
+  int numSuccs=termi->getNumSuccessors();
+  for(int i=0; i<numSuccs; i++){
+    BasicBlock* succ=termi->getSuccessor(i);
+    if(succ==pBBL){
+      continue;
+    }else{
+      //create a post block
+      BasicBlock* newBBL_post=BasicBlock::Create(context, "StraightTaint_Type1Loop_post", &F, succ);
+      IRBuilder<> builder_postBlock(newBBL_post);
+      //call a inline function and write the counter to buffer
+      counter=builder_postBlock.CreateLoad(inst2_var);
+      builder_postBlock.CreateCall(__pMbr->logCounter, counter);
+      //insert a br inst and jump to the succ
+      builder_postBlock.CreateBr(succ);
+      termi->setSuccessor(i, newBBL_post);
+    }
+  }
   //
 }
 
@@ -199,6 +222,9 @@ ModuleMembers::ModuleMembers(Module& M): __M(M), voidTy(NULL), shortTy(NULL), lo
   //log
   Constant * c = M.getOrInsertFunction("_StraightTaint_log", voidTy, shortTy, NULL);
   log = cast<Function>(c);
+  //logCounter
+  Constant * cCounter = M.getOrInsertFunction("_StraightTaint_logCounter", voidTy, intTy, NULL);
+  logCounter = cast<Function>(cCounter);
   //check all the members
   assert(checkRep());
 }

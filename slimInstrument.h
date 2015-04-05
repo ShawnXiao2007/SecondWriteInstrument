@@ -57,6 +57,7 @@ class ModuleMembers{
     Type* shortTy;
     Type* intTy;
     Function* log;
+    Function* logCounter;
   private:
     bool checkRep();
 };

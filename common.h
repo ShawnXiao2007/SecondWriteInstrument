@@ -18,6 +18,7 @@
 #include "llvm/Support/raw_ostream.h"
 #include "llvm/ADT/Statistic.h"
 #include "llvm/ADT/SCCIterator.h"
+#include "llvm/Support/IRBuilder.h"
 //#include "llvm/DataLayout.h"
 #include "llvm/Support/Debug.h"
 #include "/home/jun/llvm-3.0.src/lib/VMCore/ConstantsContext.h"
