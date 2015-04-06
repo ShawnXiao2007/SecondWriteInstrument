@@ -281,15 +281,16 @@ void SlimInst::run(){
       __instMainOrStartFuncEntryBBL(F);
       initDone=true;
     }
-    assert(initDone==true);
   }
+  assert(initDone==true);
 }
 
 void SlimInst::__instMainOrStartFuncEntryBBL(Function& F){
   BasicBlock* entry=&(F.front());
   Instruction* firstInst=&(entry->front());
-  CallInst * callInit = CallInst::Create(__pMbr->init, __pMbr->gvar_addr, "", firstInst);
-  new StoreInst(callInit, __pMbr->gvar_addr, firstInst);
+  IRBuilder<> builder(firstInst); 
+  CallInst* callInit=builder.CreateCall(__pMbr->init, __pMbr->gvar_addr); 
+  builder.CreateStore(callInit, __pMbr->gvar_addr);
 }
 
 void ModuleMeta::outputModuleMetaToFile(){
