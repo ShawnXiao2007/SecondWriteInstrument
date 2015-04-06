@@ -212,26 +212,40 @@ void SlimInst::__instLogBBL(BasicBlock* pBBL, unsigned short BBID){
   CallInst::Create(__pMbr->log, ConstantInt::get(__pMbr->shortTy, BBID),  "", first);
 }
 
-ModuleMembers::ModuleMembers(Module& M): __M(M), voidTy(NULL), shortTy(NULL), log(NULL){
+ModuleMembers::ModuleMembers(Module& M): __M(M), voidTy(NULL), shortTy(NULL), intTy(NULL), ptr16Ty(NULL), log(NULL), logCounter(NULL), gvar_addr(NULL){
   //voidTy
   voidTy = Type::getVoidTy(M.getContext());
   //shortTy
   shortTy = IntegerType::get(M.getContext(), 16);
   //intTy
   intTy = IntegerType::get(M.getContext(), 32);
+  //ptr16Ty
+  ptr16Ty = PointerType::get(IntegerType::get(M.getContext(), 16), 0); 
   //log
   Constant * c = M.getOrInsertFunction("_StraightTaint_log", voidTy, shortTy, NULL);
   log = cast<Function>(c);
   //logCounter
   Constant * cCounter = M.getOrInsertFunction("_StraightTaint_logCounter", voidTy, intTy, NULL);
   logCounter = cast<Function>(cCounter);
+  //gvar_addr
+  gvar_addr=new GlobalVariable(M,
+                              ptr16Ty,
+                              false,
+                              GlobalValue::CommonLinkage,
+                              ConstantPointerNull::get(ptr16Ty),
+                              "addr");
   //check all the members
   assert(checkRep());
 }
 
 bool ModuleMembers::checkRep(){
   assert(shortTy);
+  assert(voidTy);
+  assert(intTy);
+  assert(ptr16Ty);
   assert(log);
+  assert(logCounter);
+  assert(gvar_addr);
   return true;
 }
 
@@ -266,4 +280,8 @@ void ModuleMeta::outputModuleMetaToFile(){
       errs()<<"\t"<<k->first<<"\t"<<k->second<<"\n";
     }
   }
+}
+
+void __declareAddr(Type* Ptr16Ty){
+  
 }

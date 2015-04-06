@@ -56,8 +56,11 @@ class ModuleMembers{
     Type* voidTy;
     Type* shortTy;
     Type* intTy;
+    PointerType* ptr16Ty;
     Function* log;
     Function* logCounter;
+  
+    GlobalVariable* gvar_addr;
   private:
     bool checkRep();
 };

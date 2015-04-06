@@ -26,10 +26,13 @@ namespace {
     virtual bool runOnModule(Module &M) {
       Type * VoidTy = Type::getVoidTy(M.getContext());
       Type * ShortTy = IntegerType::get(M.getContext(), 16);
-
+      Type * IntTy = IntegerType::get(M.getContext(), 32);
       Constant * c = M.getOrInsertFunction("_StraightTaint_log", VoidTy, ShortTy, NULL);
       Function * log = cast<Function>(c);
+      Constant * cCounter = M.getOrInsertFunction("_StraightTaint_logCounter", VoidTy, IntTy, NULL);
+      Function * logCounter = cast<Function>(cCounter); 
       log->addFnAttr(llvm::Attribute::AlwaysInline);
+      logCounter->addFnAttr(llvm::Attribute::AlwaysInline);
       return true;
     }
   };
