@@ -212,13 +212,20 @@ void SlimInst::__instLogBBL(BasicBlock* pBBL, unsigned short BBID){
   CallInst::Create(__pMbr->log, ConstantInt::get(__pMbr->shortTy, BBID),  "", first);
 }
 
-ModuleMembers::ModuleMembers(Module& M): __M(M), voidTy(NULL), shortTy(NULL), intTy(NULL), ptr16Ty(NULL), ptr32Ty(NULL), log(NULL), logCounter(NULL), gvar_addr(NULL){
+ModuleMembers::ModuleMembers(Module& M): 
+  __M(M), voidTy(NULL), shortTy(NULL), intTy(NULL), longTy(NULL), 
+  ptr16Ty(NULL), ptr32Ty(NULL), 
+  log(NULL), logCounter(NULL), init(NULL), fork32(NULL), fork64(NULL), fkill(NULL), ffflush(NULL), eval(NULL),
+  gvar_addr(NULL)
+{
   //voidTy
   voidTy = Type::getVoidTy(M.getContext());
   //shortTy
   shortTy = IntegerType::get(M.getContext(), 16);
   //intTy
   intTy = IntegerType::get(M.getContext(), 32);
+  //longTy
+  longTy = IntegerType::get(M.getContext(), 64);
   //ptr16Ty
   ptr16Ty = PointerType::get(IntegerType::get(M.getContext(), 16), 0); 
   //ptr32Ty
@@ -232,7 +239,21 @@ ModuleMembers::ModuleMembers(Module& M): __M(M), voidTy(NULL), shortTy(NULL), in
   //init
   Constant * cInit = M.getOrInsertFunction("_StraightTaint_init", ptr16Ty, ptr32Ty, NULL);
   init = cast<Function>(cInit);
-  //gvar_addr
+  //fork32 and fork64
+  Constant * f32=M.getOrInsertFunction("_StraightTaint_fork32", voidTy, intTy, NULL);
+  fork32 = cast<Function>(f32);
+  Constant * f64=M.getOrInsertFunction("_StraightTaint_fork64", voidTy, longTy, NULL);
+  fork64 = cast<Function>(f64);
+  //kill()
+  Constant* fKillConst=M.getOrInsertFunction("kill",intTy,intTy,intTy,NULL);
+  fkill=cast<Function>(fKillConst);
+  //fflush()
+  Constant * ff=M.getOrInsertFunction("_StraightTaint_flush", voidTy, shortTy, NULL);
+  ffflush = cast<Function>(ff);
+  //eval()
+  Constant * e=M.getOrInsertFunction("_StraightTaint_eval", voidTy, intTy, shortTy, NULL);
+  eval = cast<Function>(e);
+  //globals
   gvar_addr=new GlobalVariable(M,
                               ptr16Ty,
                               false,
@@ -264,7 +285,7 @@ void ModuleMeta::displayStatInfo(){
   errs()<<"Num of Funcs: "<<__numFuncs<<"\n";
 }
 
-void SlimInst::run(){
+bool SlimInst::run(){
   string fstart("start");
   string fmain("main");
   bool initDone=false;
@@ -283,6 +304,7 @@ void SlimInst::run(){
     }
   }
   assert(initDone==true);
+  return true;
 }
 
 void SlimInst::__instMainOrStartFuncEntryBBL(Function& F){
@@ -309,4 +331,18 @@ void ModuleMeta::outputModuleMetaToFile(){
   }
 }
 
-
+void SlimInst::__instCallInst(CallInst* callInst, Instruction* next){
+  Function* f=callInst->getCalledFunction();
+  string fname(f->getName().data());
+  if(fname==string("fork") ||
+      (fname==string("syscall") && ((ConstantInt*)(callInst->getArgOperand(0)))->getZExtValue()==__NR_clone )  ){
+    IRBuilder<> builder(next);
+    if(callInst->getType()->isIntegerTy(32)){
+      builder.CreateCall(__pMbr->fork32, callInst);
+    }else if(callInst->getType()->isIntegerTy(64)){
+      builder.CreateCall(__pMbr->fork64, callInst);
+    }else{
+      assert(0);
+    }
+  }
+}

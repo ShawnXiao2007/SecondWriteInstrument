@@ -56,11 +56,17 @@ class ModuleMembers{
     Type* voidTy;
     Type* shortTy;
     Type* intTy;
+    Type* longTy;
     PointerType* ptr16Ty;
     PointerType* ptr32Ty;
     Function* log;
     Function* logCounter;
     Function* init;  
+    Function* fork32;
+    Function* fork64;
+    Function* fkill;
+    Function* ffflush;
+    Function* eval;
     GlobalVariable* gvar_addr;
   private:
     bool checkRep();
@@ -77,7 +83,7 @@ public:
   void displayNumFuncAndBBL();
 
   //run the instrumentation
-  void run();
+  bool run();
 
 private:
   Module &__M;
@@ -92,5 +98,6 @@ private:
   void __instLogBBL(BasicBlock * BBL, unsigned short BBID);
   void __instType1LoopBBL(Function& F, BasicBlock * BBL, unsigned short loopID);
   void __instMainOrStartFuncEntryBBL(Function& F);
+  void __instCallInst(CallInst* callInst,Instruction* next);
 };
 #endif
