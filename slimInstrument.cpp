@@ -222,7 +222,7 @@ ModuleMembers::ModuleMembers(Module& M): __M(M), voidTy(NULL), shortTy(NULL), in
   //ptr16Ty
   ptr16Ty = PointerType::get(IntegerType::get(M.getContext(), 16), 0); 
   //ptr32Ty
-  ptr32Ty = PointerType::get(IntegerType::get(M.getContext(), 32), 0); 
+  ptr32Ty = PointerType::get(ptr16Ty, 0); 
   //log
   Constant * c = M.getOrInsertFunction("_StraightTaint_log", voidTy, shortTy, NULL);
   log = cast<Function>(c);

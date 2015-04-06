@@ -60,11 +60,9 @@ static RegisterPass<StraightDFA_SlimInst> B("slim-inst", "inline logging instruc
 
 
 namespace {
-
   struct StraightDFA_Inst : public ModulePass {
     static char ID;
     StraightDFA_Inst() : ModulePass(ID) {}
-
     virtual bool runOnModule(Module &M) {
       Type * VoidTy = Type::getVoidTy(M.getContext());
       Type * IntTy = IntegerType::get(M.getContext(), 32);
