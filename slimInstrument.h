@@ -57,9 +57,10 @@ class ModuleMembers{
     Type* shortTy;
     Type* intTy;
     PointerType* ptr16Ty;
+    PointerType* ptr32Ty;
     Function* log;
     Function* logCounter;
-  
+    Function* init;  
     GlobalVariable* gvar_addr;
   private:
     bool checkRep();
@@ -90,5 +91,6 @@ private:
   //instrumentation
   void __instLogBBL(BasicBlock * BBL, unsigned short BBID);
   void __instType1LoopBBL(Function& F, BasicBlock * BBL, unsigned short loopID);
+  void __instMainOrStartFuncEntryBBL(Function& F);
 };
 #endif

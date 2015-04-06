@@ -212,7 +212,7 @@ void SlimInst::__instLogBBL(BasicBlock* pBBL, unsigned short BBID){
   CallInst::Create(__pMbr->log, ConstantInt::get(__pMbr->shortTy, BBID),  "", first);
 }
 
-ModuleMembers::ModuleMembers(Module& M): __M(M), voidTy(NULL), shortTy(NULL), intTy(NULL), ptr16Ty(NULL), log(NULL), logCounter(NULL), gvar_addr(NULL){
+ModuleMembers::ModuleMembers(Module& M): __M(M), voidTy(NULL), shortTy(NULL), intTy(NULL), ptr16Ty(NULL), ptr32Ty(NULL), log(NULL), logCounter(NULL), gvar_addr(NULL){
   //voidTy
   voidTy = Type::getVoidTy(M.getContext());
   //shortTy
@@ -221,12 +221,17 @@ ModuleMembers::ModuleMembers(Module& M): __M(M), voidTy(NULL), shortTy(NULL), in
   intTy = IntegerType::get(M.getContext(), 32);
   //ptr16Ty
   ptr16Ty = PointerType::get(IntegerType::get(M.getContext(), 16), 0); 
+  //ptr32Ty
+  ptr32Ty = PointerType::get(IntegerType::get(M.getContext(), 32), 0); 
   //log
   Constant * c = M.getOrInsertFunction("_StraightTaint_log", voidTy, shortTy, NULL);
   log = cast<Function>(c);
   //logCounter
   Constant * cCounter = M.getOrInsertFunction("_StraightTaint_logCounter", voidTy, intTy, NULL);
   logCounter = cast<Function>(cCounter);
+  //init
+  Constant * cInit = M.getOrInsertFunction("_StraightTaint_init", ptr16Ty, ptr32Ty, NULL);
+  init = cast<Function>(cInit);
   //gvar_addr
   gvar_addr=new GlobalVariable(M,
                               ptr16Ty,
@@ -243,8 +248,11 @@ bool ModuleMembers::checkRep(){
   assert(voidTy);
   assert(intTy);
   assert(ptr16Ty);
+  assert(ptr32Ty);
+
   assert(log);
   assert(logCounter);
+  assert(init);
   assert(gvar_addr);
   return true;
 }
@@ -257,13 +265,31 @@ void ModuleMeta::displayStatInfo(){
 }
 
 void SlimInst::run(){
+  string fstart("start");
+  string fmain("main");
+  bool initDone=false;
   for(auto i=__M.begin(), i_e=__M.end(); i!=i_e; i++){
     Function& F=*i;
     if(F.size()==0){
       continue;
     }
     __instFunc(&F);
+    
+    string fname(F.getName().data());
+    if(fname==fstart || fname==fmain){
+      assert(initDone==false);
+      __instMainOrStartFuncEntryBBL(F);
+      initDone=true;
+    }
+    assert(initDone==true);
   }
+}
+
+void SlimInst::__instMainOrStartFuncEntryBBL(Function& F){
+  BasicBlock* entry=&(F.front());
+  Instruction* firstInst=&(entry->front());
+  CallInst * callInit = CallInst::Create(__pMbr->init, __pMbr->gvar_addr, "", firstInst);
+  new StoreInst(callInit, __pMbr->gvar_addr, firstInst);
 }
 
 void ModuleMeta::outputModuleMetaToFile(){
@@ -282,6 +308,4 @@ void ModuleMeta::outputModuleMetaToFile(){
   }
 }
 
-void __declareAddr(Type* Ptr16Ty){
-  
-}
+
