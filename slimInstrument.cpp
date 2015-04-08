@@ -127,6 +127,15 @@ void SlimInst::__instFunc(Function *  F){
       //loop
 
     }
+    for(auto j=pBBL->begin(), j_e=pBBL->end(); j!=j_e; j++){
+      Instruction* l=j;
+      if(CallInst* callInst=dyn_cast<CallInst>(l)){
+        BasicBlock::iterator k=j;
+        k++;
+        Instruction* next=k;
+        __instCallInst(callInst, next);
+      }
+    }
   }
 }
 
@@ -344,5 +353,10 @@ void SlimInst::__instCallInst(CallInst* callInst, Instruction* next){
     }else{
       assert(0);
     }
+  }else if(fname==string("open") || fname==string("fopen") || fname==string("accept") || fname==string("socket") || fname==string("open64")){
+    IRBuilder<> builder(next);
+    Constant* pidArg=ConstantInt::get(__pMbr->intTy, 20149999);
+    Constant* sigArg=ConstantInt::get(__pMbr->intTy, 0);
+    builder.CreateCall2(__pMbr->fkill, pidArg, sigArg);
   }
 }
