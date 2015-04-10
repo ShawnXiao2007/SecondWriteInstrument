@@ -125,7 +125,7 @@ void SlimInst::__instFunc(Function *  F){
       __instLogBBL(pBBL, iID);
     }else{
       //loop
-
+      __instType1LoopBBL(*F, pBBL, iID);
     }
     for(auto j=pBBL->begin(), j_e=pBBL->end(); j!=j_e; j++){
       Instruction* l=j;
