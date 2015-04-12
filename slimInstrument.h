@@ -7,7 +7,7 @@ using namespace std;
 
 class ModuleMeta{
 public:
-  ModuleMeta(Module &M):__M(M), __maxF(0), __maxB(0), __pFofMaxB(0), __numBBLs(0), __numLoops(0), __numType1Loops(0), __numFuncs(0){
+  ModuleMeta(Module &M):__M(M), __maxF(0), __maxB(0), __pFofMaxB(0), __loopBBLs(new unordered_set<BasicBlock const*>()), __numBBLs(0), __numLoops(0), __numType1Loops(0), __numFuncs(0){
     __initEverything();
   };
   //output the meta information
@@ -39,6 +39,7 @@ public:
   map<string, map<int, int>> LoopID2Type;
   void __initFunctionName2ID();
   void __initBBLID2Name();
+  shared_ptr< unordered_set<BasicBlock const*> > __loopBBLs;
 
   //info
   unsigned int __numBBLs;
@@ -93,6 +94,8 @@ private:
   //insert instructions to non-loop block
   //insert basic blocks before and after loop blocks
   void __instFunc(Function * F);
+  void __instFuncMin(Function * F);
+  void __instFuncMax(Function * F);
 
   //instrumentation
   void __instLogBBL(BasicBlock * BBL, unsigned short BBID);

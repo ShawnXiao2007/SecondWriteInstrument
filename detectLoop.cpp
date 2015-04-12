@@ -106,15 +106,16 @@ void LoopDetector::__extractType2Loops(){
       //type 1 loop
       continue;
     }
+
     BasicBlock const * tmp=loopEnd;
-    while(tmp->getSinglePredecessor()){
-      tmp=tmp->getSinglePredecessor();
+    shared_ptr< vector<BasicBlock const*> > loopBBLs(new vector<BasicBlock const*>() );
+    loopBBLs->push_back(tmp);
+    while(BasicBlock const* predTmp=tmp->getSinglePredecessor()){
+      tmp=predTmp;
+      loopBBLs->push_back(tmp);
     }
     if(tmp==loopStart){
-      shared_ptr< vector<BasicBlock const*> > tmp2(new vector<BasicBlock const*>() );
-      tmp2->push_back(loopStart);
-      tmp2->push_back(loopEnd);
-      __type2Loops.insert(tmp2);
+      __type2Loops.insert(loopBBLs);
     }
   }
 }
@@ -135,6 +136,24 @@ shared_ptr< unordered_set< BasicBlock const *  >> LoopDetector::getType2Loops(){
     auto v=*(*i);
     assert(v.size()!=0);
     retVal->insert(v[0]);
+  }
+  return retVal;
+}
+
+shared_ptr< unordered_set< BasicBlock const * > > LoopDetector::getLoopBBLs(){
+  shared_ptr< unordered_set< BasicBlock const * > > retVal(new unordered_set< BasicBlock const * >());
+  for(auto i=__type1Loops.begin(), i_e=__type1Loops.end(); i!=i_e; i++){
+    auto v=*(*i);
+    assert(v.size()!=0);
+    retVal->insert(v[0]);
+  }
+  for(auto i=__type2Loops.begin(), i_e=__type2Loops.end(); i!=i_e; i++){
+    auto v=*(*i);
+    assert(v.size()!=0);
+    for(auto j=v.begin(), j_e=v.end(); j!=j_e; j++){
+      BasicBlock const* b=*j;
+      retVal->insert(b);
+    }
   }
   return retVal;
 }

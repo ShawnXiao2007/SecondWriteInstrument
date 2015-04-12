@@ -69,6 +69,12 @@ void ModuleMeta::__initBBLID2Name(){
     //Use a loop detector to detect the loops
     LoopDetector LD(*i);
     auto loops=LD.getType1Loops();
+    //__loopBBLs
+    auto fLoopBBLs=LD.getLoopBBLs();
+    for(auto j=fLoopBBLs->begin(), j_e=fLoopBBLs->end(); j!=j_e; j++){
+      BasicBlock const* b=*j;
+      __loopBBLs->insert(b);
+    }
     //update num Loops and Type1Loops
     __numLoops+=LD.getNumOfBackedges();
     __numType1Loops+=loops->size();
@@ -139,6 +145,81 @@ void SlimInst::__instFunc(Function *  F){
   }
 }
 
+void SlimInst::__instFuncMax(Function *  F){
+  if(F->size()==0){
+    return;
+  }
+  BasicBlock& entryBBL=F->getEntryBlock(); 
+  //get function ID
+  string fName(F->getName().data());
+  auto tmp=__pMeta->FunctionName2ID;
+  unsigned short FuncID=tmp.find(fName)->second;
+  //get addr 2 bbid
+  map<BasicBlock*, unsigned short> addr2bbid;
+  auto& FBBLID2Addr=__pMeta->BBLID2Addr;
+  const map<int, BasicBlock*> & bbid2addr=FBBLID2Addr.find(fName)->second;
+  for(auto i=bbid2addr.begin(), i_e=bbid2addr.end(); i!=i_e; i++){
+    addr2bbid.insert(make_pair(i->second, i->first));
+  }
+  //instrument basic blocks one by one
+  for(auto i=F->begin(), i_e=F->end(); i!=i_e; i++){
+    BasicBlock* pBBL=i;
+    unsigned short iID=addr2bbid[pBBL];
+    if(pBBL==&entryBBL){
+      __instLogBBL(pBBL, FuncID);      
+    }else if(__pMeta->__loopBBLs->find(pBBL)==__pMeta->__loopBBLs->end()){
+      __instLogBBL(pBBL, iID);
+    }else{
+      __instLogBBL(pBBL, iID);
+    }
+    for(auto j=pBBL->begin(), j_e=pBBL->end(); j!=j_e; j++){
+      Instruction* l=j;
+      if(CallInst* callInst=dyn_cast<CallInst>(l)){
+        BasicBlock::iterator k=j;
+        k++;
+        Instruction* next=k;
+        __instCallInst(callInst, next);
+      }
+    }
+  }
+}
+void SlimInst::__instFuncMin(Function *  F){
+  if(F->size()==0){
+    return;
+  }
+  BasicBlock& entryBBL=F->getEntryBlock(); 
+  //get function ID
+  string fName(F->getName().data());
+  auto tmp=__pMeta->FunctionName2ID;
+  unsigned short FuncID=tmp.find(fName)->second;
+  //get addr 2 bbid
+  map<BasicBlock*, unsigned short> addr2bbid;
+  auto& FBBLID2Addr=__pMeta->BBLID2Addr;
+  const map<int, BasicBlock*> & bbid2addr=FBBLID2Addr.find(fName)->second;
+  for(auto i=bbid2addr.begin(), i_e=bbid2addr.end(); i!=i_e; i++){
+    addr2bbid.insert(make_pair(i->second, i->first));
+  }
+  //instrument basic blocks one by one
+  for(auto i=F->begin(), i_e=F->end(); i!=i_e; i++){
+    BasicBlock* pBBL=i;
+    unsigned short iID=addr2bbid[pBBL];
+    if(pBBL==&entryBBL){
+      __instLogBBL(pBBL, FuncID);      
+    }else if(__pMeta->__loopBBLs->find(pBBL)==__pMeta->__loopBBLs->end()){
+      __instLogBBL(pBBL, iID);
+    }else{
+    }
+    for(auto j=pBBL->begin(), j_e=pBBL->end(); j!=j_e; j++){
+      Instruction* l=j;
+      if(CallInst* callInst=dyn_cast<CallInst>(l)){
+        BasicBlock::iterator k=j;
+        k++;
+        Instruction* next=k;
+        __instCallInst(callInst, next);
+      }
+    }
+  }
+}
 void SlimInst::__instType1LoopBBL(Function& F, BasicBlock * pBBL, unsigned short loopID){
   assert(!pBBL->isLandingPad());
   //create a basic block
@@ -307,7 +388,7 @@ bool SlimInst::run(){
     if(F.size()==0){
       continue;
     }
-    __instFunc(&F);
+    __instFuncMin(&F);
     
     string fname(F.getName().data());
     if(fname==fstart || fname==fmain){

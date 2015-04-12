@@ -13,6 +13,8 @@ public:
   void displayType2Loops();
   shared_ptr< unordered_set< BasicBlock const * > > getType2Loops();
 
+  shared_ptr< unordered_set< BasicBlock const * > > getLoopBBLs();
+
   LoopDetector(Function& F);
   
   int getNumOfBBLs();
