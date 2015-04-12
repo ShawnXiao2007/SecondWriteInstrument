@@ -143,11 +143,12 @@ void SlimInst::__instType1LoopBBL(Function& F, BasicBlock * pBBL, unsigned short
   assert(!pBBL->isLandingPad());
   //create a basic block
   LLVMContext& context=F.getContext();
-  BasicBlock* newBBL=BasicBlock::Create(context, "StraightTaint_Type1Loop", &F, pBBL);
+  BasicBlock* newBBL=BasicBlock::Create(context, "", &F, pBBL);
+  IRBuilder<> newBBLBuilder(newBBL);
   //log loopID, create a number, terminate
-  CallInst::Create(__pMbr->log, ConstantInt::get(__pMbr->shortTy, loopID),  "inst1_logLoopID", newBBL);
-  AllocaInst* inst2_var=new AllocaInst(__pMbr->intTy, nullptr, "inst2_var", newBBL);
-  BranchInst* inst3_br=BranchInst::Create(pBBL, newBBL);
+  newBBLBuilder.CreateCall(__pMbr->log, ConstantInt::get(__pMbr->shortTy, loopID));
+  AllocaInst* inst2_var= newBBLBuilder.CreateAlloca(__pMbr->intTy);
+  newBBLBuilder.CreateBr(pBBL);
   //insert an instruction to pBBL to increment the inst3_load
   auto insertPt_increment=pBBL->getFirstInsertionPt();
   Instruction* insertBefore_increment=insertPt_increment;
@@ -159,12 +160,13 @@ void SlimInst::__instType1LoopBBL(Function& F, BasicBlock * pBBL, unsigned short
   //get predecessor and change target
   for(auto i=pred_begin(pBBL), i_e=pred_end(pBBL); i!=i_e; i++){
     BasicBlock* pred=*i;
-    if(pred==pBBL){
+    if(pred==pBBL || pred==newBBL){
       continue;//self loop
     }else{
-      TerminatorInst* ti=pBBL->getTerminator();
+      TerminatorInst* ti=pred->getTerminator();
       if(BranchInst* bi=dyn_cast<BranchInst>(ti)){
        unsigned int numSucc=bi->getNumSuccessors();
+       assert(numSucc>0);
        unsigned int j=0;
        for(; j<numSucc; j++){
         BasicBlock* jSucc=bi->getSuccessor(j);
@@ -173,8 +175,10 @@ void SlimInst::__instType1LoopBBL(Function& F, BasicBlock * pBBL, unsigned short
         }
        }
        assert(j<numSucc);
+       
        bi->setSuccessor(j, newBBL);
       }else if(IndirectBrInst* ibi=dyn_cast<IndirectBrInst>(ti)){
+        assert(0);
       }else if(SwitchInst* si=dyn_cast<SwitchInst>(ti)){
         errs()<<"A special terminator inst: \n"<<*ti<<"\n";
         assert(0);
