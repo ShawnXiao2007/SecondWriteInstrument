@@ -7,7 +7,7 @@ using namespace std;
 
 class ModuleMeta{
 public:
-  ModuleMeta(Module &M):__M(M), __maxF(0), __maxB(0), __pFofMaxB(0), __loopBBLs(new unordered_set<BasicBlock const*>()), __numBBLs(0), __numLoops(0), __numType1Loops(0), __numFuncs(0){
+  ModuleMeta(Module &M):__M(M), __maxF(0), __maxB(0), __pFofMaxB(0), __loopBBLs(new unordered_set<BasicBlock const*>()), __numBBLs(0), __numLoops(0), __numType1Loops(0), __numType2Loops(0), __numFuncs(0){
     __initEverything();
   };
   //output the meta information
@@ -45,6 +45,7 @@ public:
   unsigned int __numBBLs;
   unsigned int __numLoops;
   unsigned int __numType1Loops;
+  unsigned int __numType2Loops;
   unsigned int __numFuncs;
   void displayStatInfo();
 };

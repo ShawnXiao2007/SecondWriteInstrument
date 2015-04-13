@@ -78,6 +78,7 @@ void ModuleMeta::__initBBLID2Name(){
     //update num Loops and Type1Loops
     __numLoops+=LD.getNumOfBackedges();
     __numType1Loops+=loops->size();
+    __numType2Loops+=LD.getType2Loops()->size();
 
     for(auto j=i->begin(), j_e=i->end(); j!=j_e; j++){
       //update num BBLs
@@ -208,6 +209,7 @@ void SlimInst::__instFuncMin(Function *  F){
     }else if(__pMeta->__loopBBLs->find(pBBL)==__pMeta->__loopBBLs->end()){
       __instLogBBL(pBBL, iID);
     }else{
+      errs()<<"Loop BBL: "<<FuncID<<" "<<iID<<"\n";
     }
     for(auto j=pBBL->begin(), j_e=pBBL->end(); j!=j_e; j++){
       Instruction* l=j;
@@ -376,6 +378,7 @@ void ModuleMeta::displayStatInfo(){
   errs()<<"Num of BBLs: "<<__numBBLs<<"\n";
   errs()<<"Num of Loops: "<<__numLoops<<"\n";
   errs()<<"Num of Type1Loops: "<<__numType1Loops<<"\n";
+  errs()<<"Num of Type2Loops: "<<__numType2Loops<<"\n";
   errs()<<"Num of Funcs: "<<__numFuncs<<"\n";
 }
 
@@ -388,7 +391,7 @@ bool SlimInst::run(){
     if(F.size()==0){
       continue;
     }
-    __instFuncMax(&F);
+    __instFuncMin(&F);
     
     string fname(F.getName().data());
     if(fname==fstart || fname==fmain){

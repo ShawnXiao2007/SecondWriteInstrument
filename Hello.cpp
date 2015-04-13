@@ -50,7 +50,7 @@ namespace{
       ModuleMembers MMb(M);
       MM.outputModuleMetaToFile();
       SlimInst SI(M, &MM, &MMb);
-      SI.run();
+      //SI.run();
       return true;
     };
   };
