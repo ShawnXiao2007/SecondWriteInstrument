@@ -13,6 +13,9 @@ public:
   void displayType2Loops();
   shared_ptr< unordered_set< BasicBlock const * > > getType2Loops();
 
+  void displayType3Loops();
+  shared_ptr< unordered_set< BasicBlock const * > > getType3Loops();
+
   shared_ptr< unordered_set< BasicBlock const * > > getLoopBBLs();
 
   LoopDetector(Function& F);
@@ -26,12 +29,15 @@ private:
   unordered_set< shared_ptr<vector<BasicBlock const *>> > __type1Loops;
   //a loop of several BBLs without branches
   unordered_set< shared_ptr<vector<BasicBlock const *>> > __type2Loops;
+  //a loop of several BBLs without branches
+  unordered_set< shared_ptr<vector<BasicBlock const *>> > __type3Loops;
   //backedges
   vector< pair<const BasicBlock*,const BasicBlock*> > __backedges;
   //find backedges
   void __FindFunctionBackedges(const Function &F, vector<std::pair<const BasicBlock*,const BasicBlock*> > &Result); 
   void __extractType1Loops();
   void __extractType2Loops();
+  void __extractType3Loops();
   void __extractBackedges();
 };
 #endif

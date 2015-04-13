@@ -258,13 +258,21 @@ void SlimInst::__instType1LoopBBL(Function& F, BasicBlock * pBBL, unsigned short
         }
        }
        assert(j<numSucc);
-       
        bi->setSuccessor(j, newBBL);
       }else if(IndirectBrInst* ibi=dyn_cast<IndirectBrInst>(ti)){
         assert(0);
       }else if(SwitchInst* si=dyn_cast<SwitchInst>(ti)){
-        errs()<<"A special terminator inst: \n"<<*ti<<"\n";
-        assert(0);
+        unsigned int numSucc=si->getNumSuccessors();
+        assert(numSucc>0);
+        unsigned int j=0;
+        for(; j<numSucc; j++){
+          BasicBlock* jSucc=si->getSuccessor(j);
+          if(jSucc==pBBL){
+            break;
+          }
+        }
+        assert(j<numSucc);
+        si->setSuccessor(j, newBBL);
       }else if(InvokeInst* ii=dyn_cast<InvokeInst>(ti)){
         errs()<<"A special terminator inst: \n"<<*ti<<"\n";
         assert(0);
