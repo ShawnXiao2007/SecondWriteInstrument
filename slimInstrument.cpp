@@ -388,7 +388,7 @@ bool SlimInst::run(){
     if(F.size()==0){
       continue;
     }
-    __instFuncMin(&F);
+    __instFuncMax(&F);
     
     string fname(F.getName().data());
     if(fname==fstart || fname==fmain){
