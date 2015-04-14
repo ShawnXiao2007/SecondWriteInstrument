@@ -58,6 +58,17 @@ namespace{
 char StraightDFA_SlimInst::ID = 0;
 static RegisterPass<StraightDFA_SlimInst> B("slim-inst", "inline logging instructions");
 
+namespace{
+   struct StraightDFA_profBitc : public ModulePass{
+    static char ID;
+    StraightDFA_profBitc() : ModulePass(ID){};
+    virtual bool runOnModule(Module &M){
+      return true;
+    };
+  };
+}
+char StraightDFA_profBitc::ID = 0;
+static RegisterPass<StraightDFA_profBitc> D("prof-bitc", "profile bitcode");
 
 namespace {
   struct StraightDFA_Inst : public ModulePass {
