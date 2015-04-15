@@ -5,9 +5,9 @@
 using namespace std;
 using namespace llvm;
 
-class BBLClass{
+class BBLTrace{
   public:
-    BBLClass(string fname):__fname(fname){};
+    BBLTrace(string fname):__fname(fname){};
     map<unsigned, unsigned> bblid2num;
     vector<unsigned> rank;
   private:
@@ -15,6 +15,6 @@ class BBLClass{
     void __initEverything();
     void __initBblid2num();
     void __initRank();   
-    bool __myComp(pair<unsigned, unsigned>& lhs, pair<unsigned, unsigned>& rhs); 
+    static bool __myComp(pair<unsigned, unsigned> lhs, pair<unsigned, unsigned> rhs); 
 };
 #endif

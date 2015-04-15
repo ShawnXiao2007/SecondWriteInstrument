@@ -3,7 +3,7 @@
 void BBLTrace::__initEverything(){
   __initBblid2num();
   __initRank();   
-};
+}
 void BBLTrace::__initBblid2num(){
   ifstream infile(__fname); 
   string line;
@@ -18,17 +18,17 @@ void BBLTrace::__initBblid2num(){
     }
     bblid2num[bblid]+=1;
   }
-};
+}
 void BBLTrace::__initRank(){
   vector<pair<unsigned, unsigned>> tmp;
   for(auto i=bblid2num.begin(), i_e=bblid2num.end(); i!=i_e; i++){
     tmp.push_back(pair<unsigned, unsigned>(i->first, i->second));  
   }
-  sort(tmp.begin(), tmp.end(), __myComp);
+  sort(tmp.begin(), tmp.end(), BBLTrace::__myComp);
   for(auto i=tmp.begin(), i_e=tmp.end(); i!=i_e; i++){
-    rank.append(i->first);
+    rank.push_back(i->first);
   }
 }
-bool BBLTrace::__myComp(pair<unsigned, unsigned>& lhs, pair<unsigned, unsigned>& rhs){
-  return lhs->second>rhs->second;
-}; 
+bool BBLTrace::__myComp(pair<unsigned, unsigned> lhs, pair<unsigned, unsigned> rhs){
+  return lhs.second>rhs.second;
+}
