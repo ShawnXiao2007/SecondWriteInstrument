@@ -7,7 +7,7 @@ using namespace llvm;
 
 class BBLTrace{
   public:
-    BBLTrace(string fname):__fname(fname){};
+    BBLTrace(string fname);
     map<unsigned, unsigned> bblid2num;
     vector<unsigned> rank;
   private:

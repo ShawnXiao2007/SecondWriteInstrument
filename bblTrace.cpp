@@ -1,5 +1,9 @@
 #include "bblTrace.h"
 
+BBLTrace::BBLTrace(string fname){
+  __fname=fname;
+  __initEverything();
+}
 void BBLTrace::__initEverything(){
   __initBblid2num();
   __initRank();   
@@ -11,7 +15,7 @@ void BBLTrace::__initBblid2num(){
     unsigned bblid;
     istringstream iss(line);
     if(!(iss>>bblid)){
-      break;
+      continue;
     }
     if(bblid2num.find(bblid)==bblid2num.end()){
       bblid2num[bblid]=0;
