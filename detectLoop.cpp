@@ -138,7 +138,7 @@ shared_ptr< unordered_set< BasicBlock const *  >> LoopDetector::getType2Loops(){
   for(auto i=__type2Loops.begin(), i_e=__type2Loops.end(); i!=i_e; i++){
     auto v=*(*i);
     assert(v.size()!=0);
-    retVal->insert(v[0]);
+    retVal->insert(v.back());
   }
   return retVal;
 }
@@ -165,3 +165,12 @@ shared_ptr< unordered_set< BasicBlock const * > > LoopDetector::getLoopBBLs(){
   }
   return retVal;
 }
+
+shared_ptr< unordered_set< BasicBlock const * > > LoopDetector::getLoopStarts(){
+  shared_ptr< unordered_set< BasicBlock const * > > retVal(new unordered_set< BasicBlock const * >() );
+  for(auto i=__backedges.begin(), i_e=__backedges.end(); i!=i_e; i++){
+    retVal->insert(i->second);
+  }
+  return retVal;
+}
+

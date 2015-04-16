@@ -17,4 +17,19 @@ class BBLTrace{
     void __initRank();   
     static bool __myComp(pair<unsigned, unsigned> lhs, pair<unsigned, unsigned> rhs); 
 };
+
+class BBLAnalyzer{
+  public:
+    BBLAnalyzer(Module& M, BBLTrace const * pBT, string bcfname);
+    void write2file(string outfname);
+    pair<string, unsigned> getBBLInfo(unsigned bblid);
+  private:
+    map<unsigned, pair<string, unsigned>> __bblinfo;
+    string __bcfname;
+    BBLTrace const* __pBT;
+    Module& __M;
+
+    void __initEverything();
+    unsigned __getBblid(BasicBlock const* bbl);
+};
 #endif

@@ -17,6 +17,7 @@ public:
   shared_ptr< unordered_set< BasicBlock const * > > getType3Loops();
 
   shared_ptr< unordered_set< BasicBlock const * > > getLoopBBLs();
+  shared_ptr< unordered_set< BasicBlock const * > > getLoopStarts();
 
   LoopDetector(Function& F);
   
