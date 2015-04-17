@@ -20,14 +20,14 @@ class BBLTrace{
 
 class BBLAnalyzer{
   public:
-    BBLAnalyzer(Module& M, BBLTrace const * pBT, string bcfname);
+    BBLAnalyzer(BBLTrace const * pBT, string bcfname);
     void write2file(string outfname);
     pair<string, unsigned> getBBLInfo(unsigned bblid);
   private:
     map<unsigned, pair<string, unsigned>> __bblinfo;
     string __bcfname;
     BBLTrace const* __pBT;
-    Module& __M;
+    Module * __M;
 
     void __initEverything();
     unsigned __getBblid(BasicBlock const* bbl);

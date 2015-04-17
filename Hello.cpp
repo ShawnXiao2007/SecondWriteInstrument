@@ -3,6 +3,7 @@
 #include "common.h"
 #include "detectLoop.h"
 #include "slimInstrument.h"
+#include "bblTrace.h"
 using namespace llvm;
 using namespace std;
 const int BUF_SIZE=10*1024*1024;
@@ -57,18 +58,6 @@ namespace{
 }
 char StraightDFA_SlimInst::ID = 0;
 static RegisterPass<StraightDFA_SlimInst> B("slim-inst", "inline logging instructions");
-
-namespace{
-   struct StraightDFA_profBitc : public ModulePass{
-    static char ID;
-    StraightDFA_profBitc() : ModulePass(ID){};
-    virtual bool runOnModule(Module &M){
-      return true;
-    };
-  };
-}
-char StraightDFA_profBitc::ID = 0;
-static RegisterPass<StraightDFA_profBitc> D("prof-bitc", "profile bitcode");
 
 namespace {
   struct StraightDFA_Inst : public ModulePass {
@@ -207,7 +196,6 @@ namespace {
     }
   };
 }
-
 char StraightDFA_Inst::ID = 0;
 static RegisterPass<StraightDFA_Inst> A("inst", "instrument every basic block");
 

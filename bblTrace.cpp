@@ -37,12 +37,15 @@ bool BBLTrace::__myComp(pair<unsigned, unsigned> lhs, pair<unsigned, unsigned> r
   return lhs.second>rhs.second;
 }
 
-BBLAnalyzer::BBLAnalyzer(Module& M, BBLTrace const* pBT, string bcfname):__bcfname(bcfname), __pBT(pBT), __M(M){
+BBLAnalyzer::BBLAnalyzer(BBLTrace const* pBT, string bcfname):__bcfname(bcfname), __pBT(pBT){
+  LLVMContext context;
+  SMDiagnostic error;
+  __M=ParseIRFile(__bcfname.c_str(), error, context);
   __initEverything(); 
 }
 
 void  BBLAnalyzer::__initEverything(){
-  for(auto i=__M.begin(), i_e=__M.end(); i!=i_e; i++){
+  for(auto i=__M->begin(), i_e=__M->end(); i!=i_e; i++){
     Function& F=*i;
     LoopDetector LD(F);
     auto loopStarts=LD.getLoopStarts();
@@ -62,8 +65,10 @@ void  BBLAnalyzer::__initEverything(){
           type=3;
         }
       }
-      assert(__bblinfo.find(id)==__bblinfo.end());
-      __bblinfo[id]=pair<string, unsigned>(funcName, type);
+      if(id!=65536){
+        assert(__bblinfo.find(id)==__bblinfo.end());
+        __bblinfo[id]=pair<string, unsigned>(funcName, type);
+      }
     }
   }
 }

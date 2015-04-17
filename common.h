@@ -41,4 +41,11 @@
 #include <string>
 #include <syscall.h>
 #include <sys/wait.h>
+
+//for load module from file
+#include </home/jun/llvm-3.0.src/include/llvm/Module.h>
+#include </home/jun/llvm-3.0.src/include/llvm/Support/IRReader.h>
+#include </home/jun/llvm-3.0.src/include/llvm/LLVMContext.h>
+#include </home/jun/llvm-3.0.src/include/llvm/Support/SourceMgr.h>
+
 #endif
