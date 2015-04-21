@@ -36,15 +36,14 @@ void BBLTrace::__initRank(){
 bool BBLTrace::__myComp(pair<unsigned, unsigned> lhs, pair<unsigned, unsigned> rhs){
   return lhs.second>rhs.second;
 }
-
 BBLAnalyzer::BBLAnalyzer(BBLTrace const* pBT, string bcfname):__bcfname(bcfname), __pBT(pBT){
-  LLVMContext context;
-  SMDiagnostic error;
-  __M=ParseIRFile(__bcfname.c_str(), error, context);
   __initEverything(); 
 }
-
 void  BBLAnalyzer::__initEverything(){
+  LLVMContext& context=getGlobalContext();
+  SMDiagnostic error;
+  unique_ptr<Module> __M(ParseIRFile(__bcfname.c_str(), error, context));
+  assert(__M.get());
   for(auto i=__M->begin(), i_e=__M->end(); i!=i_e; i++){
     Function& F=*i;
     LoopDetector LD(F);
@@ -68,22 +67,23 @@ void  BBLAnalyzer::__initEverything(){
       if(id!=65536){
         assert(__bblinfo.find(id)==__bblinfo.end());
         __bblinfo[id]=pair<string, unsigned>(funcName, type);
+        __bblid2addr[id]=bbl;
       }
     }
   }
 }
-
 void BBLAnalyzer::write2file(string outfname){
   ofstream ouf;
   ouf.open(outfname.c_str());
   for(auto i :  __pBT->rank){
     ouf<<i<<"\t";
+    ouf<<__bblid2addr[i]<<"\t";
+    ouf<<((__pBT->bblid2num).find(i))->second<<"\t";
     ouf<<__bblinfo[i].first.c_str()<<"\t";
     ouf<<__bblinfo[i].second<<"\n";
   }
   ouf.close();
 }
-
 unsigned BBLAnalyzer::__getBblid(BasicBlock const* bbl){
   unsigned retVal=65536;
   string s1("_StraightTaint_log");
@@ -100,6 +100,7 @@ unsigned BBLAnalyzer::__getBblid(BasicBlock const* bbl){
           retVal=id;
           break;
         }else{
+          continue;
           assert(0);
         }
       }

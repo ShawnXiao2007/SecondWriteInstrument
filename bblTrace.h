@@ -25,9 +25,9 @@ class BBLAnalyzer{
     pair<string, unsigned> getBBLInfo(unsigned bblid);
   private:
     map<unsigned, pair<string, unsigned>> __bblinfo;
+    map<unsigned, BasicBlock*> __bblid2addr;
     string __bcfname;
     BBLTrace const* __pBT;
-    Module * __M;
 
     void __initEverything();
     unsigned __getBblid(BasicBlock const* bbl);
